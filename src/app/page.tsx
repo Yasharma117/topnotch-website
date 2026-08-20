@@ -4,6 +4,8 @@ import { Pain } from '@/components/sections/Pain'
 import { Solution } from '@/components/sections/Solution'
 import { Features } from '@/components/sections/Features'
 import { Comparison } from '@/components/sections/Comparison'
+import { HowItWorks } from '@/components/sections/HowItWorks'
+import { UseCases } from '@/components/sections/UseCases'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -26,6 +28,8 @@ export default function Home() {
         <Solution />
         <Features />
         <Comparison />
+        <HowItWorks />
+        <UseCases />
       </main>
     </>
   )
