@@ -2,6 +2,7 @@ import { Hero } from '@/components/sections/Hero'
 import { Nav } from '@/components/sections/Nav'
 import { Pain } from '@/components/sections/Pain'
 import { Solution } from '@/components/sections/Solution'
+import { Features } from '@/components/sections/Features'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default function Home() {
         <Hero />
         <Pain />
         <Solution />
+        <Features />
       </main>
     </>
   )
