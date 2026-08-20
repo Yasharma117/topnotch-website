@@ -9,6 +9,7 @@ import { UseCases } from '@/components/sections/UseCases'
 import { Testimonials } from '@/components/sections/Testimonials'
 import { Trust } from '@/components/sections/Trust'
 import { FAQ } from '@/components/sections/FAQ'
+import { GetFree } from '@/components/sections/GetFree'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -36,6 +37,7 @@ export default function Home() {
         <Testimonials />
         <Trust />
         <FAQ />
+        <GetFree />
       </main>
     </>
   )
