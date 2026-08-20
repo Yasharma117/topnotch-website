@@ -1,4 +1,7 @@
 import { Hero } from '@/components/sections/Hero'
+import { Nav } from '@/components/sections/Nav'
+import { Pain } from '@/components/sections/Pain'
+import { Solution } from '@/components/sections/Solution'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -14,7 +17,12 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
-      <Hero />
+      <Nav />
+      <main className="pt-16">
+        <Hero />
+        <Pain />
+        <Solution />
+      </main>
     </>
   )
 }
