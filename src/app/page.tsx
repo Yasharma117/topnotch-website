@@ -10,6 +10,7 @@ import { Testimonials } from '@/components/sections/Testimonials'
 import { Trust } from '@/components/sections/Trust'
 import { FAQ } from '@/components/sections/FAQ'
 import { GetFree } from '@/components/sections/GetFree'
+import { Footer } from '@/components/sections/Footer'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -39,6 +40,7 @@ export default function Home() {
         <FAQ />
         <GetFree />
       </main>
+      <Footer />
     </>
   )
 }
