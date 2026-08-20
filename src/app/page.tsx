@@ -3,6 +3,7 @@ import { Nav } from '@/components/sections/Nav'
 import { Pain } from '@/components/sections/Pain'
 import { Solution } from '@/components/sections/Solution'
 import { Features } from '@/components/sections/Features'
+import { Comparison } from '@/components/sections/Comparison'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default function Home() {
         <Pain />
         <Solution />
         <Features />
+        <Comparison />
       </main>
     </>
   )
