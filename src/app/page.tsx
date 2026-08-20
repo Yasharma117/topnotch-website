@@ -6,6 +6,8 @@ import { Features } from '@/components/sections/Features'
 import { Comparison } from '@/components/sections/Comparison'
 import { HowItWorks } from '@/components/sections/HowItWorks'
 import { UseCases } from '@/components/sections/UseCases'
+import { Testimonials } from '@/components/sections/Testimonials'
+import { Trust } from '@/components/sections/Trust'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -30,6 +32,8 @@ export default function Home() {
         <Comparison />
         <HowItWorks />
         <UseCases />
+        <Testimonials />
+        <Trust />
       </main>
     </>
   )
