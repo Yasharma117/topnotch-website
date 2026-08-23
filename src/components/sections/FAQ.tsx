@@ -2,67 +2,69 @@
 
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { ChevronDown, Mail } from 'lucide-react'
+import { GithubMark } from '@/components/GithubMark'
 
 const faqs = [
   {
-    question: 'What macOS versions does TopNotch support?',
+    question: 'Which Macs does TopNotch run on?',
     answer:
-      'TopNotch requires macOS 14 (Sonoma) or later. It runs on both Apple Silicon (M1/M2/M3) and Intel Macs with a notch.',
+      'macOS 13 (Ventura) or later, on a Mac with a camera notch — MacBook Pro 14”/16” from 2021, and MacBook Air from 2022. Apple Silicon and Intel both work.',
+  },
+  {
+    question: 'Will people see the script when I share my screen?',
+    answer:
+      'No. The panel is marked as excluded from screen capture, so Zoom, Meet, Teams, Loom and OBS record your desktop without it. What they see is you looking straight at the camera.',
   },
   {
     question: 'Which languages does voice-following support?',
     answer:
-      '11 Indian languages with en-IN as default: English (India), Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Odia. The phonetic variation map handles v/w, th/t, th/d, z/j, s/sh substitutions automatically.',
+      'Twelve: English (India) as the default, plus Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam and Punjabi, and US and UK English.',
   },
   {
-    question: 'Does TopNotch work with an external monitor?',
+    question: 'How does the voice-following work?',
     answer:
-      'Yes. The notch teleprompter appears on the built-in display\'s notch. If you close the lid (clamshell mode), TopNotch pauses automatically since the notch isn\'t visible.',
+      'Apple’s on-device speech recognition transcribes as you talk, and a fuzzy matcher lines that transcript up against your script — tolerating mishearings and common Indian-English sound swaps — then scrolls to wherever you actually are. Nothing is sent anywhere.',
   },
   {
-    question: 'How does the voice-following actually work?',
+    question: 'How well does it handle my accent?',
     answer:
-      'On-device Apple Speech Recognition streams transcripts locally. Our fuzzy matcher (Levenshtein 75% char similarity + phonetic map + ±30-word sliding window) aligns your spoken words to the script and scrolls accordingly. No cloud, no latency.',
+      'Indian English is the default rather than an afterthought, and the matcher treats v/w, th/t, z/j and s/sh as interchangeable, so the usual mishearings do not break the sync. It is best judged on your own script and mic — try it and see.',
   },
   {
-    question: 'What audio format does it record?',
+    question: 'What does it record?',
     answer:
-      'AAC encoded .m4a at 44.1kHz stereo. The file saves to your chosen folder (default: ~/Movies/TopNotch). You can drag it directly into Final Cut, DaVinci, Premiere, or any editor.',
+      'Your microphone, as AAC in an .m4a container at 44.1 kHz, mono. It saves to Recording.m4a on your Desktop by default, and you can point it somewhere else.',
   },
   {
-    question: 'Is there a subscription or account required?',
+    question: 'Can I use it without recording?',
     answer:
-      'No. TopNotch is completely free — no signup, no subscription, no in-app purchases. The app is open source (github.com/Yasharma117/TopNotch). Download from the Mac App Store or GitHub releases.',
+      'Yes. Press ⌘⇧T for the teleprompter on its own. Classic mode also scrolls at a fixed speed you set, from 10 to 120 points per second, if you would rather it ignore your voice entirely.',
   },
   {
-    question: 'How accurate is the accent tolerance?',
+    question: 'What permissions does it need?',
     answer:
-      'For Indian English, our tests show ~85% word-level sync accuracy in real-world conditions (background noise, mixed Hindi-English, varying mic quality). The phonetic map handles the most common Indian English variations. It\'s not perfect — heavy noise or very fast speech can cause brief desync, but it recovers within the ±30-word window.',
+      'Microphone, to record and to hear you; and Speech Recognition, for the on-device transcription that drives voice-following. macOS asks for both the first time you use them.',
   },
   {
-    question: 'Can I use TopNotch for teleprompting without recording?',
+    question: 'Does any of this leave my Mac?',
     answer:
-      'Yes. Classic mode gives you constant-speed scrolling with WPM control (100–300 WPM). Voice-following mode works without recording too — just disable the record toggle. The notch still glows to show it\'s active.',
+      'No. Speech recognition runs on-device, the recording is written to your disk, and the app makes no network calls. There is no account and nothing to sign in to.',
   },
   {
-    question: 'What permissions does TopNotch need?',
+    question: 'What does it cost?',
     answer:
-      'Microphone (for voice-following + recording), Accessibility (for global hotkeys ⌘⇧R), and Screen Recording (for the notch overlay to appear above other windows). All permissions are requested on first use with clear explanations.',
+      'Nothing. No subscription, no in-app purchases, no account. The source is public on GitHub if you want to read it or build it yourself.',
   },
   {
-    question: 'Does it work with Zoom / Teams / Meet / Loom / OBS?',
+    question: 'What if my Mac has no notch?',
     answer:
-      'Yes. TopNotch sits in the system notch — it\'s invisible to screen capture and meeting apps. Your camera sees you looking straight at the lens. The .m4a records your local mic, not the meeting audio.',
+      'TopNotch is built around the notch, so a Mac without one is not supported today.',
   },
   {
-    question: 'What if I don\'t have a notch Mac?',
+    question: 'How do I report a bug?',
     answer:
-      'TopNotch requires a Mac with a camera housing notch (MacBook Pro 14"/16" 2021+, MacBook Air 13" 2022+, Studio Display). On non-notch Macs, the app will show a "Notch not available" notice and won\'t run.',
-  },
-  {
-    question: 'How do I report bugs or request features?',
-    answer:
-      'Open an issue on GitHub (github.com/Yasharma117/TopNotch/issues) or email yash@8bityash.vercel.app. Include macOS version, Mac model, and steps to reproduce. We respond within 48 hours.',
+      'Open an issue on GitHub, or email yash@8bityash.vercel.app. Including your macOS version, Mac model and the steps you took makes it far easier to fix.',
   },
 ]
 
@@ -85,10 +87,10 @@ export function FAQ() {
             id="faq-title"
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-[#0a0a0a] mb-6"
           >
-            Questions? <span className="text-[var(--tn-blue)]">We have answers.</span>
+            Questions? <span className="text-[var(--tn-blue)]">Straight answers.</span>
           </h2>
           <p className="text-lg text-[#444] leading-relaxed max-w-2xl mx-auto">
-            Everything you need to know about TopNotch — from compatibility to privacy.
+            What it runs on, what it records, and what it sends anywhere.
           </p>
         </div>
 
@@ -119,21 +121,10 @@ export function FAQ() {
                 <span className="text-base md:text-lg font-medium text-[#0a0a0a] leading-relaxed pr-8">
                   {faq.question}
                 </span>
-                <svg
-                  className={cn(
+                <ChevronDown size={20} strokeWidth={2} className={cn(
                     'shrink-0 h-5 w-5 text-[var(--muted-foreground)] transition-transform duration-200',
                     openIndex === index && 'rotate-180'
-                  )}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
+                  )} aria-hidden="true" />
               </button>
 
               <div
@@ -170,10 +161,7 @@ export function FAQ() {
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tn-blue)] focus-visible:ring-offset-2'
               )}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                <polyline points="22,6 12,13 2,6" />
-              </svg>
+              <Mail size={18} strokeWidth={2} aria-hidden="true" />
               Email us
             </a>
             <a
@@ -190,9 +178,7 @@ export function FAQ() {
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2'
               )}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-              </svg>
+              <GithubMark size={18} />
               GitHub Issues
             </a>
           </div>

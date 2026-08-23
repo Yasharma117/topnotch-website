@@ -1,45 +1,24 @@
-'use client'
-
 import { cn } from '@/lib/utils'
+import { ClipboardPaste, MousePointer2, CircleCheck } from 'lucide-react'
 
 const steps = [
   {
     number: '01',
     title: 'Paste your script',
-    description: 'Copy any text — speeches, talking points, interview questions — into TopNotch. The TextArrangementEngine auto-detects natural pauses and inserts section breaks.',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-        <path d="M10 9h8M10 13h8M10 17h5" />
-        <path d="M4 20h16" />
-      </svg>
-    ),
+    description: 'Drop in your talking points, a full script, or a list of questions. TopNotch breaks it into sections at the natural pauses.',
+    icon: <ClipboardPaste size={28} strokeWidth={1.5} />,
   },
   {
     number: '02',
     title: 'Hover the notch',
-    description: 'Move your pointer to the notch — TopNotch expands. Press ⌘⇧R or click the record button. The shouldered notch glows, ready to follow your voice.',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-        <polyline points="22 4 12 14.01 9 11.01" />
-        <path d="M12 17v5" />
-        <path d="M9 20h6" />
-      </svg>
-    ),
+    description: 'Point at the notch and the panel opens. Hit ⌘⇧R to start recording, or ⌘⇧T for the teleprompter on its own.',
+    icon: <MousePointer2 size={28} strokeWidth={1.5} />,
   },
   {
     number: '03',
     title: 'Read, record, done',
-    description: 'Speak naturally — the text scrolls with you in real time. Your mic audio saves as .m4a locally. When finished, the notch collapses. Export script + audio instantly.',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="2" />
-        <path d="M8 17h8M12 17v4" />
-        <path d="M12 7v4" />
-        <path d="M8 11h8" />
-      </svg>
-    ),
+    description: 'Talk normally. The script keeps pace, your audience sees nothing, and your audio lands on the Desktop as an .m4a.',
+    icon: <CircleCheck size={28} strokeWidth={1.5} />,
   },
 ]
 
@@ -60,10 +39,10 @@ export function HowItWorks() {
             id="how-title"
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-[#0a0a0a] mb-6"
           >
-            Three steps to <span className="text-[var(--tn-blue)]">perfect delivery</span>
+            Running in <span className="text-[var(--tn-blue)]">about a minute</span>
           </h2>
           <p className="text-lg text-[#444] leading-relaxed">
-            No setup, no calibration, no account. Just paste, point, and present.
+            No setup, no calibration, no account.
           </p>
         </div>
 
@@ -110,16 +89,16 @@ export function HowItWorks() {
 
         {/* Keyboard shortcuts note */}
         <div className="mt-16 rounded-2xl p-6 md:p-8 text-center bg-[var(--tn-blue-light)]/30 border border-[var(--tn-blue)]/20">
-          <p className="text-sm text-[var(--tn-blue)] font-semibold mb-3">Pro tip: Keyboard shortcuts</p>
-          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-[#444]">
+          <p className="text-sm text-[var(--tn-blue)] font-semibold mb-3">Global shortcuts</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 text-sm text-[#444]">
             <kbd className="px-3 py-1.5 rounded bg-white border border-[var(--border)] font-mono">⌘⇧R</kbd>
-            <span>Start/Stop recording</span>
-            <kbd className="px-3 py-1.5 rounded bg-white border border-[var(--border)] font-mono">Space</kbd>
-            <span>Play/Pause (Classic)</span>
-            <kbd className="px-3 py-1.5 rounded bg-white border border-[var(--border)] font-mono">↑/↓</kbd>
-            <span>Speed up/Down</span>
-            <kbd className="px-3 py-1.5 rounded bg-white border border-[var(--border)] font-mono">Esc</kbd>
-            <span>Collapse notch</span>
+            <span>Start / stop recording</span>
+            <kbd className="px-3 py-1.5 rounded bg-white border border-[var(--border)] font-mono">⌘⇧T</kbd>
+            <span>Toggle teleprompter</span>
+            <kbd className="px-3 py-1.5 rounded bg-white border border-[var(--border)] font-mono">⇧←/→</kbd>
+            <span>Slower / faster</span>
+            <kbd className="px-3 py-1.5 rounded bg-white border border-[var(--border)] font-mono">⇧↑/↓</kbd>
+            <span>Scroll the script</span>
           </div>
         </div>
       </div>

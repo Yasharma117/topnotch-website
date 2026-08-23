@@ -1,6 +1,5 @@
-'use client'
-
 import { cn } from '@/lib/utils'
+import { AudioLines, Languages, Mic, ListOrdered, Gauge, EyeOff } from 'lucide-react'
 
 interface Feature {
   icon: React.ReactNode
@@ -11,73 +10,40 @@ interface Feature {
 
 const features: Feature[] = [
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z" />
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-        <line x1="12" y1="19" x2="12" y2="22" />
-      </svg>
-    ),
-    title: 'Voice-following teleprompter',
-    description: 'Scrolls at your natural speaking pace. No fixed speed, no rushing, no lagging behind — the text moves when you do.',
+    icon: <AudioLines size={24} strokeWidth={1.5} />,
+    title: 'Follows your voice',
+    description: 'The script scrolls at the pace you actually speak — pause, ad-lib, or slow down and it waits for you instead of running ahead.',
     accent: 'blue',
   },
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
-        <path d="M12 22v-10" />
-      </svg>
-    ),
-    title: 'Accent-tolerant sync (en-IN + 11)',
-    description: 'Built for Indian English. Phonetic variation map (v/w, th/t, z/j, s/sh) + Levenshtein 75% char-similarity + ±30-word window.',
+    icon: <EyeOff size={24} strokeWidth={1.5} />,
+    title: 'Hidden from screen shares',
+    description: 'The panel is excluded from screen capture, so Zoom, Meet, Teams and OBS see your desktop without it. Your audience never sees the script.',
     accent: 'purple',
   },
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 16v-4M12 8h.01" />
-      </svg>
-    ),
-    title: 'Records mic audio to .m4a',
-    description: 'Your voice captured locally as AAC .m4a while you read. Perfect for post-production, captions, or review.',
-    accent: 'green',
-  },
-  {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-        <path d="M6.5 2H20v20" />
-        <path d="M6.5 17A2.5 2.5 0 0 1 4 19.5" />
-        <path d="M9 8h6M9 12h6M9 16h4" />
-      </svg>
-    ),
-    title: 'Auto-arrange section pauses',
-    description: 'NLP-powered TextArrangementEngine detects natural breaks and inserts pauses automatically — no manual formatting needed.',
-    accent: 'rose',
-  },
-  {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="2" />
-        <path d="M8 21h8M12 17v4" />
-      </svg>
-    ),
-    title: 'Classic constant-speed mode',
-    description: 'Prefer a steady scroll? Classic mode lets you set words-per-minute and walk away. Reliable, predictable, familiar.',
+    icon: <Languages size={24} strokeWidth={1.5} />,
+    title: 'Built for Indian English',
+    description: 'Indian English is the default, and the matcher expects the sounds it actually uses — so v/w and th/t swaps do not throw off the sync. Ten Indian languages, plus US and UK English.',
     accent: 'blue',
   },
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="2" />
-        <path d="M9 12h6M12 9v6" />
-      </svg>
-    ),
-    title: '100% on-device, private',
-    description: 'No cloud, no accounts, no network calls. Apple Speech runs locally. Your script, your voice, your Mac — that\'s it.',
+    icon: <Mic size={24} strokeWidth={1.5} />,
+    title: 'Records while you read',
+    description: 'Captures your mic to AAC .m4a, 44.1 kHz mono, saved straight to your Mac. Drop it into Final Cut, Resolve, or a captions tool.',
     accent: 'green',
+  },
+  {
+    icon: <ListOrdered size={24} strokeWidth={1.5} />,
+    title: 'Finds your pauses',
+    description: 'Paste a wall of text and TopNotch breaks it into sections at the natural stopping points, so you are not hand-marking every beat.',
+    accent: 'rose',
+  },
+  {
+    icon: <Gauge size={24} strokeWidth={1.5} />,
+    title: 'Or a steady scroll',
+    description: 'Classic mode ignores your voice and scrolls at a fixed speed you set, from 10 to 120 points per second. Predictable when you want predictable.',
+    accent: 'blue',
   },
 ]
 
@@ -125,10 +91,10 @@ export function Features() {
             id="features-title"
             className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-[#0a0a0a] mb-6"
           >
-            Built for how <span className="text-[var(--tn-blue)]">you</span> speak
+            Built for how <span className="text-[var(--tn-blue)]">you</span> actually talk
           </h2>
           <p className="text-lg text-[#444] leading-relaxed">
-            Every feature exists because the alternatives got it wrong for Indian creators.
+            Six things it does, and nothing it doesn&rsquo;t.
           </p>
         </div>
 
@@ -143,7 +109,6 @@ export function Features() {
                   'group relative rounded-2xl p-7 md:p-8',
                   'bg-white border transition-all duration-300',
                   'hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)]',
-                  style.iconBg,
                   style.border,
                   style.hoverBorder
                 )}
@@ -191,26 +156,11 @@ export function Features() {
           })}
         </div>
 
-        {/* Subtle CTA at bottom */}
-        <div className="mt-16 text-center">
-          <p className="text-sm text-[var(--muted-foreground)] mb-4">
-            All features run locally. No signup. No subscription.
-          </p>
-          <a
-            href="#get-topnotch"
-            className={cn(
-              'inline-flex items-center justify-center gap-2 px-7 py-3',
-              'rounded-xl font-semibold text-base',
-              'bg-[var(--tn-blue)] text-white',
-              'hover:bg-[var(--tn-blue-dark)] active:bg-[var(--tn-blue)]/90',
-              'transition-colors duration-200',
-              'shadow-[0_4px_24px_rgba(66,151,247,0.3)]',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tn-blue)] focus-visible:ring-offset-2'
-            )}
-          >
-            Get TopNotch — Free
-          </a>
-        </div>
+        <p className="mt-16 text-center text-sm text-[var(--muted-foreground)]">
+          Everything runs on your Mac. No signup, no subscription, no network calls — works the same
+          on a plane as it does on stage.
+        </p>
+
       </div>
     </section>
   )
