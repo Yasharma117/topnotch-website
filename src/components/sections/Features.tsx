@@ -23,8 +23,8 @@ const features: Feature[] = [
   },
   {
     icon: <Languages size={24} strokeWidth={1.5} />,
-    title: 'Built for Indian English',
-    description: 'Indian English is the default, and the matcher expects the sounds it actually uses — so v/w and th/t swaps do not throw off the sync. Ten Indian languages, plus US and UK English.',
+    title: 'Forgiving of how you say it',
+    description: 'It does not assume one correct pronunciation — v/w, th/t, z/j and s/sh are treated as interchangeable, so a mishearing does not throw the sync off. Twelve languages, with English (India) as the default.',
     accent: 'blue',
   },
   {

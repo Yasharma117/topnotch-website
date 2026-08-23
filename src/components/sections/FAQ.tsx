@@ -24,12 +24,12 @@ const faqs = [
   {
     question: 'How does the voice-following work?',
     answer:
-      'Apple’s on-device speech recognition transcribes as you talk, and a fuzzy matcher lines that transcript up against your script — tolerating mishearings and common Indian-English sound swaps — then scrolls to wherever you actually are. Nothing is sent anywhere.',
+      'Apple’s on-device speech recognition transcribes as you talk, and a fuzzy matcher lines that transcript up against your script — allowing for mishearings, and for the sounds that shift from one speaker to the next — then scrolls to wherever you actually are. Nothing is sent anywhere.',
   },
   {
     question: 'How well does it handle my accent?',
     answer:
-      'Indian English is the default rather than an afterthought, and the matcher treats v/w, th/t, z/j and s/sh as interchangeable, so the usual mishearings do not break the sync. It is best judged on your own script and mic — try it and see.',
+      'It does not assume one correct pronunciation. The matcher treats v/w, th/t, z/j and s/sh as interchangeable, so the mishearings that usually break voice-following do not break this one. English (India) is the default locale, with eleven more to choose from. Best judged on your own script and mic — try it and see.',
   },
   {
     question: 'What does it record?',

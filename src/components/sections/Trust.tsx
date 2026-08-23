@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { Languages, Lock, Mic, Gift, UserRoundX } from 'lucide-react'
 
 const trustItems = [
-  { label: '11 Indian languages', Icon: Languages },
+  { label: '12 languages', Icon: Languages },
   { label: '100% on-device', Icon: Lock },
   { label: 'Records to .m4a', Icon: Mic },
   { label: 'Free, MIT licensed', Icon: Gift },
