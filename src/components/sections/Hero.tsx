@@ -97,7 +97,7 @@ export function Hero() {
           </span>
           <span className="flex items-center gap-1.5">
             <GithubMark size={14} />
-            Free · source on GitHub
+            Free and open source (MIT)
           </span>
           <span className="flex items-center gap-1.5">
             <Laptop size={14} strokeWidth={2} aria-hidden="true" />

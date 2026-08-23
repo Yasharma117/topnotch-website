@@ -21,7 +21,7 @@ export function GetFree() {
           <div className="relative z-10 space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20">
               <CircleCheck size={16} strokeWidth={2.5} className="text-white" aria-hidden="true" />
-              <span className="text-sm font-semibold text-white">Public repo · build from source</span>
+              <span className="text-sm font-semibold text-white">Free &amp; open source (MIT)</span>
             </div>
 
             {/* Headline */}
@@ -56,14 +56,14 @@ export function GetFree() {
                 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium',
                 'bg-white/20 text-white/90 border border-white/30'
               )}>
-                Source available
+                MIT licensed
               </span>
             </div>
 
             {/* Primary CTA — the download that actually exists today */}
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href="https://github.com/Yasharma117/TopNotch"
+                href="https://github.com/Yasharma117/TopNotch/releases/latest"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
@@ -77,7 +77,7 @@ export function GetFree() {
                 )}
               >
                 <GithubMark size={20} />
-                Get TopNotch on GitHub
+                Download for macOS
               </a>
 
               <a

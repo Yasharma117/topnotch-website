@@ -54,7 +54,7 @@ const faqs = [
   {
     question: 'What does it cost?',
     answer:
-      'Nothing. No subscription, no in-app purchases, no account. The source is public on GitHub if you want to read it or build it yourself.',
+      'Nothing. No subscription, no in-app purchases, no account. It is MIT licensed and the source is on GitHub if you want to read it or build it yourself.',
   },
   {
     question: 'What if my Mac has no notch?',

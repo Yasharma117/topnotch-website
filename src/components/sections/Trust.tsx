@@ -5,7 +5,7 @@ const trustItems = [
   { label: '11 Indian languages', Icon: Languages },
   { label: '100% on-device', Icon: Lock },
   { label: 'Records to .m4a', Icon: Mic },
-  { label: 'Free to use', Icon: Gift },
+  { label: 'Free, MIT licensed', Icon: Gift },
   { label: 'No account needed', Icon: UserRoundX },
 ]
 

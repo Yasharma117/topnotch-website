@@ -187,7 +187,7 @@ export function Footer() {
             <a href="https://8bityash.vercel.app" target="_blank" rel="noopener noreferrer" className="text-[var(--tn-blue)] hover:underline font-medium">
               Yash Sharma
             </a>
-            {' '}· Source on GitHub.
+            {' '}· Released under the MIT License.
           </p>
 
           {/* Bottom badges */}
@@ -206,7 +206,7 @@ export function Footer() {
               'bg-purple-500/10 text-purple-600 border border-purple-500/20'
             )}>
               <GithubMark size={12} />
-              Source available
+              MIT licensed
             </span>
           </div>
         </div>
