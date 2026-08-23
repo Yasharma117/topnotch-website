@@ -1,169 +1,126 @@
 /**
- * TopNotch notch geometry — TypeScript port of Swift's NotchBoxShape.path(in:)
- * Source: TopNotch/NotchPanelController.swift (NotchChromeMetrics + NotchBoxShape)
+ * TopNotch notch geometry — a direct port of NotchBoxShape.path(in:)
+ * from TopNotch/NotchContentView.swift (github.com/Yasharma117/TopNotch).
  *
- * Geometry constants from Swift:
- * - width: 210, height: 44
- * - shoulderDrop: 18, emergenceRadius: 18
- * - outerTopRadius: 22, bottomRadius: 26
- * - blendStart: width + 4 = 214, blendEnd: width + 40 = 250
- * - collapsed radius: 20
+ * The rect is the WHOLE panel, not the notch. The 210pt notch is a tab centred on
+ * the panel's top edge; as the panel grows wider than the notch, concave emergence
+ * curves flare out from the tab down to a shelf at `shoulderDrop`, which runs out
+ * to the panel's rounded outer corners. Below that it is a plain rounded body.
+ *
+ * Expansion is driven by panel WIDTH, exactly as in the app — there is no separate
+ * expand parameter. Blend runs over notchWidth+4 .. notchWidth+40.
  */
 
-export interface NotchPathOptions {
-  /** Base notch width (default 210) */
-  width: number
-  /** Base notch height (default 44) */
-  height: number
-  /** Expansion factor 0..1: 0 = collapsed rounded rect, 1 = full shouldered notch */
-  expand: number
-  /** Optional custom corner radius for collapsed state (default 20) */
-  collapsedRadius?: number
-}
-
-const NOTCH_DEFAULTS = {
+/** NotchChromeMetrics, verbatim. */
+export const METRICS = {
+  notchWidth: 210,
+  notchHeight: 44,
   shoulderDrop: 18,
   emergenceRadius: 18,
   outerTopRadius: 22,
   bottomRadius: 26,
-  blendStartExtra: 4,   // blendStart = width + 4
-  blendEndExtra: 40,    // blendEnd = width + 40
-  collapsedRadius: 20,
 } as const
 
-/**
- * Linear interpolation helper
- */
-function lerp(a: number, b: number, t: number): number {
-  return a + (b - a) * t
+export interface NotchPathOptions {
+  /** Panel width. At <= notchWidth+4 the shape is the bare collapsed notch. */
+  width?: number
+  /** Panel height. */
+  height?: number
+  notchWidth?: number
+  shoulderDrop?: number
+  emergenceRadius?: number
+  outerTopRadius?: number
+  bottomRadius?: number
 }
 
-/**
- * Clamp value between min and max
- */
-function clamp(v: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, v))
-}
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
+const n = (v: number) => (Object.is(v, -0) ? 0 : Number(v.toFixed(2)))
 
 /**
- * Generate the notch SVG path.
- * The coordinate system: origin at notch center-top.
- * x increases right, y increases down.
- * Returns an SVG path string (absolute commands).
+ * Generate the panel outline as an SVG path, origin at the panel's top-left
+ * (x: 0..width, y: 0..height) to match SwiftUI's `rect`.
  */
-export function notchPath(opts: NotchPathOptions): string {
+export function notchPath(opts: NotchPathOptions = {}): string {
   const {
-    width = 210,
-    height = 44,
-    expand = 0,
-    collapsedRadius = NOTCH_DEFAULTS.collapsedRadius,
+    width = METRICS.notchWidth,
+    height = METRICS.notchHeight,
+    notchWidth = METRICS.notchWidth,
+    shoulderDrop = METRICS.shoulderDrop,
+    emergenceRadius = METRICS.emergenceRadius,
+    outerTopRadius = METRICS.outerTopRadius,
+    bottomRadius = METRICS.bottomRadius,
   } = opts
 
-  const t = clamp(expand, 0, 1)
+  const minX = 0
+  const minY = 0
+  const maxX = Math.max(width, 1)
+  const maxY = Math.max(height, 1)
+  const midX = maxX / 2
 
-  // Interpolated geometry
-  const w = width
-  const h = height
-  const shoulderDrop = NOTCH_DEFAULTS.shoulderDrop
-  const emergenceRadius = NOTCH_DEFAULTS.emergenceRadius
-  const outerTopRadius = NOTCH_DEFAULTS.outerTopRadius
-  const bottomRadius = NOTCH_DEFAULTS.bottomRadius
-  const blendStart = w + NOTCH_DEFAULTS.blendStartExtra
-  const blendEnd = w + NOTCH_DEFAULTS.blendEndExtra
+  // Blend collapsed -> shouldered over a small width range so the shape does not
+  // pop during animated frame transitions.
+  const blendStart = notchWidth + 4
+  const blendEnd = notchWidth + 40
+  const blend = clamp((maxX - blendStart) / (blendEnd - blendStart), 0, 1)
 
-  // Interpolate between collapsed and expanded key measurements
-  // Collapsed: rounded rect width w, height h, radius collapsedRadius
-  // Expanded: shouldered notch with full geometry
+  // Bottom radius cannot exceed what the box can hold, or the curves cross over.
+  const botR = Math.min(bottomRadius, maxX / 2, maxY)
 
-  // Effective half-width at top (where shoulders emerge)
-  const halfWidthTop = lerp(w / 2, blendEnd / 2, t)
-  // Effective half-width at bottom of notch (base)
-  const halfWidthBottom = lerp(w / 2, w / 2, t) // base width stays same
-  // Shoulder y position (where curve transitions)
-  const shoulderY = lerp(0, shoulderDrop, t)
-  // Emergence curve radius (blends shoulder into top edge)
-  const emergenceR = lerp(collapsedRadius, emergenceRadius, t)
-  // Outer top corner radius
-  const outerTopR = lerp(collapsedRadius, outerTopRadius, t)
-  // Bottom corner radius
-  const bottomR = lerp(collapsedRadius, bottomRadius, t)
-
-  // Build path — start at left-bottom, go counter-clockwise
-  // Coordinates relative to center (0,0) at notch top-center
-  const leftBottomX = -halfWidthBottom
-  const rightBottomX = halfWidthBottom
-  const leftTopX = -halfWidthTop
-  const rightTopX = halfWidthTop
-  const topY = 0
-  const shoulderTopY = -shoulderY // negative because shoulders go UP from top edge
-  const bottomY = h
-
-  // Build SVG path using absolute commands
-  const cmds: string[] = []
-
-  // Start at left-bottom corner
-  cmds.push(`M ${leftBottomX.toFixed(2)} ${bottomY.toFixed(2)}`)
-
-  // Bottom edge to right-bottom (with bottom radius)
-  if (bottomR > 0) {
-    // Arc to right-bottom
-    cmds.push(`H ${(rightBottomX - bottomR).toFixed(2)}`)
-    cmds.push(`A ${bottomR.toFixed(2)} ${bottomR.toFixed(2)} 0 0 1 ${rightBottomX.toFixed(2)} ${(bottomY - bottomR).toFixed(2)}`)
-    // Right edge up to shoulder start
-    cmds.push(`V ${(shoulderTopY + emergenceR).toFixed(2)}`)
-    // Emergence curve (shoulder blend)
-    cmds.push(`A ${emergenceR.toFixed(2)} ${emergenceR.toFixed(2)} 0 0 1 ${(rightTopX + outerTopR).toFixed(2)} ${shoulderTopY.toFixed(2)}`)
-    // Top edge to left shoulder
-    cmds.push(`H ${(-rightTopX - outerTopR).toFixed(2)}`)
-    // Left emergence curve
-    cmds.push(`A ${emergenceR.toFixed(2)} ${emergenceR.toFixed(2)} 0 0 1 ${(leftTopX - 0).toFixed(2)} ${(shoulderTopY + emergenceR).toFixed(2)}`)
-    // Left edge down
-    cmds.push(`V ${(bottomY - bottomR).toFixed(2)}`)
-    // Bottom-left arc
-    cmds.push(`A ${bottomR.toFixed(2)} ${bottomR.toFixed(2)} 0 0 1 ${leftBottomX.toFixed(2)} ${bottomY.toFixed(2)}`)
-  } else {
-    // No radius - simple rect
-    cmds.push(`H ${rightBottomX.toFixed(2)}`)
-    cmds.push(`V ${topY.toFixed(2)}`)
-    cmds.push(`H ${leftBottomX.toFixed(2)}`)
-    cmds.push(`Z`)
-  }
-
-  // If fully collapsed (t near 0), simplify to rounded rect
-  if (t < 0.01) {
-    const r = collapsedRadius
-    const hw = w / 2
+  if (blend <= 0) {
+    // Fully collapsed — flat square top (it meets the bezel), rounded bottom.
     return [
-      `M ${(-hw + r).toFixed(2)} ${h.toFixed(2)}`,
-      `H ${(hw - r).toFixed(2)}`,
-      `A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${hw.toFixed(2)} ${(h - r).toFixed(2)}`,
-      `V ${r.toFixed(2)}`,
-      `A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${(hw - r).toFixed(2)} 0`,
-      `H ${(-hw + r).toFixed(2)}`,
-      `A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${(-hw).toFixed(2)} ${r.toFixed(2)}`,
-      `V ${(h - r).toFixed(2)}`,
-      `A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${(-hw + r).toFixed(2)} ${h.toFixed(2)}`,
+      `M ${n(minX)} ${n(minY)}`,
+      `L ${n(maxX)} ${n(minY)}`,
+      `L ${n(maxX)} ${n(maxY - botR)}`,
+      `Q ${n(maxX)} ${n(maxY)} ${n(maxX - botR)} ${n(maxY)}`,
+      `L ${n(minX + botR)} ${n(maxY)}`,
+      `Q ${n(minX)} ${n(maxY)} ${n(minX)} ${n(maxY - botR)}`,
       'Z',
     ].join(' ')
   }
 
-  return cmds.join(' ')
-}
+  const drop = shoulderDrop * blend
+  const emergence = emergenceRadius * blend
 
-/**
- * Get the bounding box of the notch path for a given expansion.
- * Useful for layout/sizing.
- */
-export function notchBBox(opts: NotchPathOptions): { width: number; height: number; top: number; left: number; right: number; bottom: number } {
-  const path = notchPath(opts)
-  // Parse path for rough bbox (simplified)
-  const coords = path.match(/[-]?\d+\.?\d*/g)?.map(Number) || []
-  if (coords.length === 0) return { width: 0, height: 0, top: 0, left: 0, right: 0, bottom: 0 }
-  const xs = coords.filter((_, i) => i % 2 === 0)
-  const ys = coords.filter((_, i) => i % 2 === 1)
-  const left = Math.min(...xs)
-  const right = Math.max(...xs)
-  const top = Math.min(...ys)
-  const bottom = Math.max(...ys)
-  return { width: right - left, height: bottom - top, top, left, right, bottom }
+  // The tab cannot be wider than the panel, and the two outer corners have to fit
+  // in whatever is left beside it — otherwise the corners overrun the tab and the
+  // shelf inverts. Only bites on panels too narrow to hold notch + both corners.
+  const tab = Math.min(notchWidth, maxX)
+  const outerTop = Math.min(outerTopRadius * blend, (maxX - tab) / 2)
+
+  const notchLeft = midX - tab / 2
+  const notchRight = midX + tab / 2
+  const shoulderY = minY + drop
+  // Swift lets the shoulder run past the panel edge — harmless there because the
+  // app controls the window width, but on the web a narrow panel spikes. Clamp it
+  // to where the outer corner begins; identical output at the widths the app uses.
+  const shoulderReach = Math.min(emergence * 1.6, Math.max(0, maxX - outerTop - notchRight))
+  const rightShoulderEndX = notchRight + shoulderReach
+  const leftShoulderStartX = notchLeft - shoulderReach
+  const topShelfMaxX = Math.max(rightShoulderEndX, maxX - outerTop)
+  const topShelfMinX = Math.min(leftShoulderStartX, minX + outerTop)
+
+  return [
+    `M ${n(notchLeft)} ${n(minY)}`,
+    `L ${n(notchRight)} ${n(minY)}`,
+    // Emergence: the tab's edge peels out and down onto the shelf.
+    `C ${n(notchRight + emergence * 0.55)} ${n(minY)} ${n(notchRight + emergence * 1.05)} ${n(shoulderY)} ${n(rightShoulderEndX)} ${n(shoulderY)}`,
+    `L ${n(topShelfMaxX)} ${n(shoulderY)}`,
+    `Q ${n(maxX)} ${n(shoulderY)} ${n(maxX)} ${n(shoulderY + outerTop)}`,
+    `L ${n(maxX)} ${n(maxY - botR)}`,
+    `Q ${n(maxX)} ${n(maxY)} ${n(maxX - botR)} ${n(maxY)}`,
+    `L ${n(minX + botR)} ${n(maxY)}`,
+    `Q ${n(minX)} ${n(maxY)} ${n(minX)} ${n(maxY - botR)}`,
+    `L ${n(minX)} ${n(shoulderY + outerTop)}`,
+    `Q ${n(minX)} ${n(shoulderY)} ${n(minX + outerTop)} ${n(shoulderY)}`,
+    `L ${n(topShelfMinX)} ${n(shoulderY)}`,
+    // Swift is missing this segment: it runs the shelf line to topShelfMinX and then
+    // curves from THERE back to the tab, so the left emergence stretches across the
+    // whole shelf while the right one is a tight 1.6*emergence curve. leftShoulderStartX
+    // is computed in the Swift but only ever reaches min(), so the curve never starts
+    // where it should. Landing on it first mirrors the right side exactly.
+    `L ${n(leftShoulderStartX)} ${n(shoulderY)}`,
+    `C ${n(notchLeft - emergence * 1.05)} ${n(shoulderY)} ${n(notchLeft - emergence * 0.55)} ${n(minY)} ${n(notchLeft)} ${n(minY)}`,
+    'Z',
+  ].join(' ')
 }

@@ -1,64 +1,109 @@
 import { describe, it, expect } from 'vitest'
-import { notchPath, type NotchPathOptions } from './notch'
+import { notchPath, METRICS } from './notch'
 
-describe('notchPath', () => {
-  const baseOpts: NotchPathOptions = {
-    width: 210,
-    height: 44,
-    expand: 0,
+/** On-curve anchors plus Bézier controls — the hull that bounds the outline. */
+function points(path: string): [number, number][] {
+  const out: [number, number][] = []
+  const tok = path.trim().split(/\s+/)
+  for (let i = 0; i < tok.length; ) {
+    const cmd = tok[i++]
+    const take = (k: number) => tok.slice(i, (i += k)).map(Number)
+    if (cmd === 'M' || cmd === 'L') {
+      const [x, y] = take(2)
+      out.push([x, y])
+    } else if (cmd === 'Q') {
+      const [cx, cy, x, y] = take(4)
+      out.push([cx, cy], [x, y])
+    } else if (cmd === 'C') {
+      const [ax, ay, bx, by, x, y] = take(6)
+      out.push([ax, ay], [bx, by], [x, y])
+    } else if (cmd !== 'Z') {
+      throw new Error(`unexpected command: ${cmd}`)
+    }
   }
+  return out
+}
 
-  it('returns a valid SVG path string', () => {
-    const path = notchPath(baseOpts)
-    expect(typeof path).toBe('string')
-    expect(path.length).toBeGreaterThan(0)
-    expect(path).toMatch(/^M/)
+const COLLAPSED = METRICS.notchWidth + 4 // blendStart
+const WIDTHS = [210, COLLAPSED, COLLAPSED + 1, 230, 250, 260, 320, 420, 560, 900]
+
+describe('notchPath — port of NotchBoxShape.path(in:)', () => {
+  it('keeps the Swift NotchChromeMetrics values', () => {
+    expect(METRICS).toEqual({
+      notchWidth: 210,
+      notchHeight: 44,
+      shoulderDrop: 18,
+      emergenceRadius: 18,
+      outerTopRadius: 22,
+      bottomRadius: 26,
+    })
   })
 
-  it('collapsed notch (expand=0) produces a rounded-rect-like shape', () => {
-    const path = notchPath({ ...baseOpts, expand: 0 })
-    // Should contain arc commands for rounded corners
-    expect(path).toMatch(/[Aa]/)
-    // Width and height roughly respected (half-width 105, height 44)
-    expect(path).toContain('105')
-    expect(path).toContain('44')
+  it.each(WIDTHS)('stays inside the panel rect at width=%s', (width) => {
+    const height = 180
+    for (const [x, y] of points(notchPath({ width, height }))) {
+      expect(x).toBeGreaterThanOrEqual(-0.01)
+      expect(x).toBeLessThanOrEqual(width + 0.01)
+      expect(y).toBeGreaterThanOrEqual(-0.01)
+      expect(y).toBeLessThanOrEqual(height + 0.01)
+    }
   })
 
-  it('expanded notch (expand=1) contains shoulder control points', () => {
-    const path = notchPath({ ...baseOpts, expand: 1 })
-    // Expanded shape should be wider than collapsed (shoulderDrop adds width)
-    // and have more complex bezier curves
-    expect(path.length).toBeGreaterThan(notchPath({ ...baseOpts, expand: 0 }).length)
+  it.each(WIDTHS)('is closed and finite at width=%s', (width) => {
+    const path = notchPath({ width, height: 180 })
+    expect(path).toMatch(/^M /)
+    expect(path).toMatch(/ Z$/)
+    expect(path).not.toMatch(/NaN|Infinity/)
   })
 
-  it('expand parameter interpolates between collapsed and expanded', () => {
-    const collapsed = notchPath({ ...baseOpts, expand: 0 })
-    const expanded = notchPath({ ...baseOpts, expand: 1 })
-    const mid = notchPath({ ...baseOpts, expand: 0.5 })
-    // Mid should be different from both
-    expect(mid).not.toBe(collapsed)
-    expect(mid).not.toBe(expanded)
-    // All should be valid paths
-    expect(collapsed).toMatch(/^M/)
-    expect(mid).toMatch(/^M/)
-    expect(expanded).toMatch(/^M/)
+  it('is a plain rounded rect until the panel outgrows the notch', () => {
+    // blend <= 0 up to and including notchWidth + 4.
+    const collapsed = notchPath({ width: COLLAPSED, height: 44 })
+    expect(collapsed).not.toContain('C ') // no emergence curves
+    // Top edge spans the full width, square corners — it meets the bezel.
+    expect(collapsed.startsWith('M 0 0 L 214 0')).toBe(true)
   })
 
-  it('width and height clamp to minimum values', () => {
-    const tiny = notchPath({ width: 10, height: 10, expand: 0 })
-    expect(tiny).toMatch(/^M/)
-    // Should not throw or produce NaN
-    expect(tiny).not.toContain('NaN')
+  it('grows shoulders once past the blend threshold', () => {
+    expect(notchPath({ width: COLLAPSED + 1, height: 44 })).toContain('C ')
   })
 
-  it('expanded notch respects shoulderDrop (18) and emergenceRadius (18)', () => {
-    const path = notchPath({ ...baseOpts, expand: 1 })
-    // The expanded path should be visibly wider due to shoulders
-    const bbox = path.match(/M([\d.]+) ([\d.]+)/)
-    if (bbox) {
-      const startX = parseFloat(bbox[1])
-      // Path should start left of center due to shoulders
-      expect(startX).toBeLessThan(0)
+  it('blends continuously across the threshold rather than popping', () => {
+    const before = points(notchPath({ width: COLLAPSED, height: 120 }))
+    const after = points(notchPath({ width: COLLAPSED + 0.5, height: 120 }))
+    const box = (pts: [number, number][]) => ({
+      x: Math.min(...pts.map(([x]) => x)),
+      y: Math.max(...pts.map(([, y]) => y)),
+    })
+    expect(Math.abs(box(after).x - box(before).x)).toBeLessThan(1)
+    expect(Math.abs(box(after).y - box(before).y)).toBeLessThan(1)
+  })
+
+  it.each(WIDTHS)('is left-right symmetric at width=%s', (width) => {
+    const pts = points(notchPath({ width, height: 180 }))
+    const mirrored = pts.map(([x, y]) => [Number((width - x).toFixed(2)), y] as [number, number])
+    // Compare the point SET: the outline is what must mirror. Zero-length segments
+    // (the shelf line can land on the outer corner it already reached) change
+    // multiplicity without changing the shape.
+    const key = (p: [number, number][]) =>
+      [...new Set(p.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`))].sort().join(' ')
+    expect(key(mirrored)).toBe(key(pts))
+  })
+
+  it('centres the notch tab on the panel', () => {
+    const width = 560
+    const path = notchPath({ width, height: 200 })
+    const [left, right] = path.split(' ').slice(1, 5).filter((_, i) => i === 0 || i === 3).map(Number)
+    expect(left + right).toBeCloseTo(width, 1)
+    expect(right - left).toBeCloseTo(METRICS.notchWidth, 1)
+  })
+
+  it('never lets the shoulder spike past the panel edge', () => {
+    // Widths just past the threshold are where Swift's unclamped shoulder overshot.
+    for (const width of [230, 240, 250, 260, 280, 300, 312]) {
+      const xs = points(notchPath({ width, height: 140 })).map(([x]) => x)
+      expect(Math.max(...xs)).toBeLessThanOrEqual(width + 0.01)
+      expect(Math.min(...xs)).toBeGreaterThanOrEqual(-0.01)
     }
   })
 })
