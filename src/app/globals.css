@@ -139,3 +139,10 @@
     @apply font-sans;
   }
 }
+/* Classic-mode teleprompter scroll — constant speed, exactly as the app does it.
+   The line list is rendered twice and shifted by one full copy, so it loops seamlessly. */
+@keyframes tn-classic-scroll {
+  to {
+    transform: translateY(calc(-1 * var(--tn-scroll-span)));
+  }
+}

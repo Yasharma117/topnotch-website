@@ -1,176 +1,155 @@
 'use client'
 
-import { notchPath, type NotchPathOptions } from '@/lib/notch'
+import { useEffect, useId, useRef, useState } from 'react'
+import { notchPath, METRICS } from '@/lib/notch'
+import { DEFAULT_SCRIPT, CLASSIC, SPRING, springValue, wrapScript } from '@/lib/script'
 import { cn } from '@/lib/utils'
-import { useState, useEffect, useRef } from 'react'
+
+/** AppColors.overlay* — white on the notch's black chrome. */
+const OVERLAY = { caption: 0.35, secondary: 0.55, muted: 0.72, primary: 0.94 }
 
 interface NotchOverlayProps {
-  /** Expansion factor 0..1 (collapsed → full shouldered notch) */
-  expand?: number
-  /** Whether the notch is in recording state (shows pulsing red dot) */
-  recording?: boolean
-  /** Custom caption text to display inside notch */
-  caption?: string
-  /** Additional className */
-  className?: string
-  /** Notch width (default 210) */
   width?: number
-  /** Notch height (default 44) */
   height?: number
-}
-
-export function NotchOverlay({
-  expand = 0,
-  recording = false,
-  caption,
-  className,
-  width = 210,
-  height = 44,
-}: NotchOverlayProps) {
-  const [isMounted, setIsMounted] = useState(false)
-  const captionRef = useRef<HTMLDivElement>(null)
-  const [captionWidth, setCaptionWidth] = useState(0)
-
-  useEffect(() => {
-    setIsMounted(true)
-    // Measure caption width for potential scrolling
-    if (captionRef.current) {
-      setCaptionWidth(captionRef.current.scrollWidth)
-    }
-  }, [])
-
-  const notchOpts = { width, height, expand }
-  const path = notchPath(notchOpts)
-
-  // Default caption mimics teleprompter text
-  const defaultCaption = 'Tap to start reading…'
-  const displayCaption = caption || defaultCaption
-
-  return (
-    <div
-      className={cn(
-        'relative flex items-center justify-center pointer-events-none',
-        'w-full max-w-[400px] mx-auto',
-        className
-      )}
-      role="img"
-      aria-label={recording ? 'TopNotch teleprompter recording' : 'TopNotch teleprompter'}
-    >
-      {/* Notch SVG — black fill with blue accent rim */}
-      <svg
-        viewBox={`-${width / 2} 0 ${width} ${height}`}
-        width={width}
-        height={height}
-        className="pointer-events-none"
-        style={{ filter: 'drop-shadow(0 4px 24px rgba(0,0,0,0.15))' }}
-      >
-        {/* Notch shape — black fill */}
-        <path
-          d={path}
-          fill="var(--tn-notch-black)"
-          stroke="var(--tn-blue)"
-          strokeWidth={1.5}
-          className="transition-all duration-500 ease-out"
-        />
-
-        {/* Blue accent indicator at top-center (microphone/camera hint) */}
-        <circle
-          cx={0}
-          cy={6}
-          r={3}
-          fill="var(--tn-blue)"
-          opacity={0.8}
-          className="transition-opacity duration-300"
-        />
-
-        {/* Recording indicator — pulsing red dot */}
-        {recording && (
-          <circle
-            cx={0}
-            cy={height - 10}
-            r={5}
-            fill="var(--tn-rose)"
-            className="animate-pulse"
-            aria-hidden="true"
-          />
-        )}
-      </svg>
-
-      {/* Caption text inside notch — only visible when mounted to avoid layout shift */}
-      {isMounted && (
-        <div
-          ref={captionRef}
-          className={cn(
-            'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
-            'whitespace-nowrap text-white select-none pointer-events-none',
-            'text-[11px] font-medium leading-tight',
-            'transition-opacity duration-300'
-          )}
-          style={{
-            opacity: 0.6, // matches AppColors.overlayNormal ~0.6
-            textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-          }}
-          aria-hidden="true"
-        >
-          {displayCaption}
-        </div>
-      )}
-
-      {/* Optional: expanded caption area below notch for longer text */}
-      {caption && captionWidth > width - 20 && (
-        <div
-          className="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2 py-1"
-          style={{
-            background: 'var(--tn-notch-black)',
-            border: '1px solid var(--tn-blue)',
-            borderRadius: '8px',
-            fontSize: '10px',
-            color: 'rgba(255,255,255,0.8)',
-            whiteSpace: 'nowrap',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
-          }}
-          aria-hidden="true"
-        >
-          {caption}
-        </div>
-      )}
-    </div>
-  )
+  /** Defaults to the app's script, wrapped to the panel width. */
+  lines?: string[]
+  status?: string
+  recording?: boolean
+  /** Points per second. The app's classic-mode default is 40. */
+  speed?: number
+  /** Play the expand spring on mount, as the panel does when it opens. */
+  reveal?: boolean
+  className?: string
 }
 
 /**
- * Demo wrapper for testing the notch in isolation
+ * Drives the panel from collapsed to expanded on the app's own spring. The shape
+ * changes topology as it opens (the shoulders only exist past notchWidth+4), so the
+ * path is regenerated per frame rather than transformed — CSS cannot tween that.
  */
-export function NotchOverlayDemo() {
-  const [expand, setExpand] = useState(0)
-  const [recording, setRecording] = useState(false)
+function useReveal(width: number, height: number, enabled: boolean) {
+  const [size, setSize] = useState(() =>
+    enabled ? { w: METRICS.notchWidth, h: METRICS.notchHeight } : { w: width, h: height }
+  )
+  const frame = useRef(0)
+
+  useEffect(() => {
+    if (!enabled) return setSize({ w: width, h: height })
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return setSize({ w: width, h: height })
+    }
+    const start = performance.now()
+    const tick = (now: number) => {
+      const t = (now - start) / 1000
+      setSize({
+        w: springValue(t, METRICS.notchWidth, width),
+        h: springValue(t, METRICS.notchHeight, height),
+      })
+      if (t < SPRING.settleDuration) frame.current = requestAnimationFrame(tick)
+    }
+    frame.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame.current)
+  }, [width, height, enabled])
+
+  return size
+}
+
+export function NotchOverlay({
+  width = 340,
+  height = 196,
+  lines,
+  status,
+  recording = true,
+  speed = CLASSIC.speed,
+  reveal = false,
+  className,
+}: NotchOverlayProps) {
+  const { w, h } = useReveal(width, height, reveal)
+  // Mono runs ~0.6em per character; keep phrases inside the panel's inner width.
+  const maxChars = Math.floor((width - 36) / (CLASSIC.fontSize * 0.6))
+  const script = lines ?? wrapScript(DEFAULT_SCRIPT, maxChars)
+  const uid = useId()
+  const clipId = `${uid}-clip`
+  const maskId = `${uid}-mask`
+  const fadeId = `${uid}-fade`
+  const tabLeft = (w - METRICS.notchWidth) / 2
+  const bodyTop = METRICS.shoulderDrop + METRICS.notchHeight
+
+  const lineHeight = CLASSIC.fontSize * CLASSIC.lineSpacing
+  const span = script.length * lineHeight
+  // Constant speed, so the loop duration is simply distance / speed.
+  const duration = span / speed
 
   return (
-    <div className="flex flex-col items-center gap-8 p-12 bg-white min-h-screen">
-      <div className="flex gap-4">
-        <label className="flex items-center gap-2">
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.01}
-            value={expand}
-            onChange={(e) => setExpand(Number(e.target.value))}
-            className="w-48"
-          />
-          <span className="text-sm font-mono">{Math.round(expand * 100)}%</span>
-        </label>
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={recording}
-            onChange={(e) => setRecording(e.target.checked)}
-          />
-          <span>Recording</span>
-        </label>
-      </div>
+    <svg
+      viewBox={`0 0 ${w} ${h}`}
+      className={cn('block h-auto w-full', className)}
+      style={{ filter: 'drop-shadow(0 24px 60px rgba(0,0,0,0.28))' }}
+      role="img"
+      aria-label={`TopNotch teleprompter: ${script.join(' ')}`}
+    >
+      <defs>
+        {/* Keeps the script inside the panel's rounded body */}
+        <clipPath id={clipId}>
+          <path d={notchPath({ width: w, height: h })} />
+        </clipPath>
+        {/* Bounds the script to below the tab AND fades it at both ends, so lines
+            ease in and out instead of being sliced off at the panel edge. */}
+        <linearGradient id={fadeId} x1="0" y1={bodyTop} x2="0" y2={h} gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#000" />
+          <stop offset="0.18" stopColor="#fff" />
+          <stop offset="0.82" stopColor="#fff" />
+          <stop offset="1" stopColor="#000" />
+        </linearGradient>
+        <mask id={maskId}>
+          <rect x={0} y={bodyTop} width={w} height={h - bodyTop} fill={`url(#${fadeId})`} />
+        </mask>
+      </defs>
 
-      <NotchOverlay expand={expand} recording={recording} caption="Your script scrolls here…" />
-    </div>
+      <path d={notchPath({ width: w, height: h })} fill="var(--tn-notch-black)" />
+
+      {/* Record dot + mode, inside the 44pt tab */}
+      <circle
+        cx={tabLeft + 30}
+        cy={METRICS.notchHeight / 2}
+        r={4}
+        fill={recording ? 'var(--tn-rose)' : 'rgba(255,255,255,0.26)'}
+        className={recording ? 'animate-pulse' : undefined}
+      />
+      <text
+        x={tabLeft + 44}
+        y={METRICS.notchHeight / 2}
+        dominantBaseline="middle"
+        fill="#fff"
+        fillOpacity={OVERLAY.muted}
+        style={{ font: '500 12px var(--font-geist-mono, ui-monospace, SFMono-Regular, monospace)' }}
+      >
+        {status ?? `Classic · ${speed} pt/s`}
+      </text>
+
+      <g clipPath={`url(#${clipId})`} mask={`url(#${maskId})`}>
+        <g
+          style={{
+            '--tn-scroll-span': `${span}px`,
+            animation: `tn-classic-scroll ${duration}s linear infinite`,
+          } as React.CSSProperties}
+        >
+          {/* Rendered twice so the shift by one full copy is seamless */}
+          {[...script, ...script].map((line, i) => (
+            <text
+              key={i}
+              x={w / 2}
+              y={bodyTop + 22 + i * lineHeight}
+              textAnchor="middle"
+              fill="#fff"
+              fillOpacity={OVERLAY.primary}
+              style={{ font: `500 ${CLASSIC.fontSize}px var(--font-geist-mono, ui-monospace, SFMono-Regular, monospace)` }}
+            >
+              {line}
+            </text>
+          ))}
+        </g>
+      </g>
+    </svg>
   )
 }
