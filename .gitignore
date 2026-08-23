@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local-only planning docs — kept on disk, not published
+PLAN.md
+.hermes/
