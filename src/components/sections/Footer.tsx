@@ -46,7 +46,7 @@ export function Footer() {
             </Link>
 
             <p className="text-[#444] leading-relaxed max-w-xs">
-              A teleprompter that lives in your Mac&rsquo;s notch — hidden from screen shares, and built for the way Indian English actually sounds.
+              A teleprompter that lives in your Mac&rsquo;s notch — hidden from screen shares, follows your voice, and never leaves your Mac.
             </p>
 
             {/* Social icons */}

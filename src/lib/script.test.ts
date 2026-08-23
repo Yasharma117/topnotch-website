@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { springValue, SPRING, DEFAULT_SCRIPT, CLASSIC, wrapScript } from './script'
+import { springValue, SPRING, DEFAULT_SCRIPT, CLASSIC, wrapScript, HERO_SCRIPT } from './script'
 
 describe('springValue — port of NotchAnimationConstants', () => {
   it('holds the start value before the animation begins', () => {
@@ -63,5 +63,17 @@ describe('wrapScript', () => {
   it('does not hang on a word longer than the limit', () => {
     const wrapped = wrapScript(['supercalifragilistic ok'], 5)
     expect(wrapped).toEqual(['supercalifragilistic', 'ok'])
+  })
+})
+
+describe('HERO_SCRIPT', () => {
+  it('wraps to short phrases without losing a word', () => {
+    const wrapped = wrapScript(HERO_SCRIPT, 30)
+    expect(wrapped.join(' ')).toBe(HERO_SCRIPT.join(' '))
+    expect(wrapped.every((l) => l.length <= 30)).toBe(true)
+  })
+
+  it('stays distinct from the script the app ships with', () => {
+    expect(HERO_SCRIPT).not.toEqual(DEFAULT_SCRIPT)
   })
 })

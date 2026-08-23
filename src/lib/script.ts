@@ -56,3 +56,19 @@ export function wrapScript(lines: string[], maxChars: number): string[] {
   }
   return out
 }
+
+/**
+ * The script shown in the site's notch. Distinct from DEFAULT_SCRIPT, which is
+ * what the app actually ships with — this one demonstrates the product while it
+ * scrolls, so the reader watches the thing being described happen to them.
+ */
+export const HERO_SCRIPT = [
+  'You are reading this at the top of the screen,',
+  'a few centimetres from the camera.',
+  'That is the whole idea.',
+  'Look here and you are looking at the lens.',
+  'Share your screen and this panel is not in the capture,',
+  'so nobody on the call sees a word of it.',
+  'Keep talking and the script keeps your pace.',
+  'Pause, and it waits.',
+]

@@ -1,4 +1,5 @@
 import { Hero } from '@/components/sections/Hero'
+import { NotchChrome } from '@/components/NotchChrome'
 import { Features } from '@/components/sections/Features'
 import { HowItWorks } from '@/components/sections/HowItWorks'
 import { Trust } from '@/components/sections/Trust'
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
+      <NotchChrome />
       <main>
         <Hero />
         <Features />

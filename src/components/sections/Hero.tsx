@@ -1,7 +1,6 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { NotchOverlay } from '@/components/NotchOverlay'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { ArrowRight, ArrowDown, Lock, Laptop } from 'lucide-react'
@@ -31,12 +30,7 @@ export function Hero() {
         />
       </div>
 
-      {/* The notch hangs off the top edge of the viewport, as it does off the bezel */}
-      <div className="relative z-20 w-full max-w-[340px] px-4">
-        <NotchOverlay reveal speed={11} />
-      </div>
-
-      <div className="relative z-20 w-full max-w-5xl px-6 pt-16 pb-16 text-center">
+      <div className="relative z-20 w-full max-w-5xl px-6 pt-[16rem] pb-16 text-center">
         {/* Headline */}
         <h1
           id="hero-title"
