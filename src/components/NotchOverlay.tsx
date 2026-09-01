@@ -106,7 +106,7 @@ export function NotchOverlay({
       viewBox={`0 0 ${w} ${h}`}
       // Rendered at true size so collapsing actually shrinks it, rather than
       // scaling a smaller viewBox up to fill a fixed-width box.
-      style={{ width: w, height: h, maxWidth: '100%', filter: 'drop-shadow(0 24px 60px rgba(0,0,0,0.28))' }}
+      style={{ width: w, height: h, maxWidth: '100%' }}
       className={cn('block', className)}
       role="img"
       aria-label={`TopNotch teleprompter: ${script.join(' ')}`}
