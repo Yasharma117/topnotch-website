@@ -12,6 +12,11 @@ const faqs = [
       'macOS 13 (Ventura) or later, on a Mac with a camera notch — MacBook Pro 14”/16” from 2021, and MacBook Air from 2022. Apple Silicon and Intel both work.',
   },
   {
+    question: 'How do I install it?',
+    answer:
+      'Download TopNotch.dmg, open it, and drag TopNotch onto the Applications folder in the window that appears. Then launch it from Applications. There is no window to find — hover the notch and the panel opens. The build is signed and notarised by Apple, so Gatekeeper lets it run without the “unidentified developer” prompt.',
+  },
+  {
     question: 'Will people see the script when I share my screen?',
     answer:
       'No. The panel is marked as excluded from screen capture, so Zoom, Meet, Teams, Loom and OBS record your desktop without it. What they see is you looking straight at the camera.',
@@ -40,6 +45,11 @@ const faqs = [
     question: 'Can I use it without recording?',
     answer:
       'Yes. Press ⌘⇧T for the teleprompter on its own. Classic mode also scrolls at a fixed speed you set, from 10 to 120 points per second, if you would rather it ignore your voice entirely.',
+  },
+  {
+    question: 'How do I quit it?',
+    answer:
+      'Right-click the TopNotch icon in the Dock and choose Quit, or use the menu bar icon next to the clock. If you would rather TopNotch stayed out of the Dock entirely, turn off “Show in Dock” under Settings → General in the notch panel — the menu bar icon still quits it.',
   },
   {
     question: 'What permissions does it need?',

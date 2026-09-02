@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { CircleCheck } from 'lucide-react'
+import { CircleCheck, Download } from 'lucide-react'
 import { GithubMark } from '@/components/GithubMark'
 import Link from 'next/link'
 
@@ -63,9 +63,7 @@ export function GetFree() {
             {/* Primary CTA — the download that actually exists today */}
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href="https://github.com/Yasharma117/TopNotch/releases/latest"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="https://github.com/Yasharma117/TopNotch/releases/latest/download/TopNotch.dmg"
                 className={cn(
                   'inline-flex items-center justify-center gap-2 px-8 py-4',
                   'rounded-xl font-semibold text-base',
@@ -76,7 +74,7 @@ export function GetFree() {
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--tn-blue)]'
                 )}
               >
-                <GithubMark size={20} />
+                <Download size={20} strokeWidth={2.5} aria-hidden="true" />
                 Download for macOS
               </a>
 
@@ -97,6 +95,27 @@ export function GetFree() {
                 <GithubMark size={20} />
                 View the source
               </a>
+            </div>
+
+            <p className="text-xs text-white/75">TopNotch.dmg · 3 MB · macOS 13+</p>
+
+            {/* Install steps — the .dmg opens to a drag-to-Applications window */}
+            <div className="mt-8 grid gap-3 sm:grid-cols-3 text-left">
+              {[
+                'Open TopNotch.dmg',
+                'Drag TopNotch onto Applications',
+                'Launch it — hover the notch to open the panel',
+              ].map((step, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-3 rounded-xl px-4 py-3 bg-white/15 backdrop-blur-sm border border-white/20"
+                >
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/25 text-xs font-bold text-white font-mono">
+                    {i + 1}
+                  </span>
+                  <span className="text-sm text-white/90 leading-snug">{step}</span>
+                </div>
+              ))}
             </div>
 
             {/* System requirements */}
