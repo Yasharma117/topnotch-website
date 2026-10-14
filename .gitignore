@@ -43,3 +43,9 @@ next-env.d.ts
 # Local-only planning docs — kept on disk, not published
 PLAN.md
 .hermes/
+
+# Impeccable: generated captures, snapshots and caches (design.json + config.json are kept)
+.impeccable/review/
+.impeccable/critique/
+.impeccable/hook.cache.json
+.impeccable/live/

@@ -1,148 +1,159 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
+/* The notch is the brand: black panel, white script, one rose dot that means
+   "recording". The page around it is the screen it sits on — quiet paper, framed
+   by hairline rails like a page proof, with crop marks where sections meet. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --font-serif: var(--font-newsreader);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-rule: var(--rule);
+  --color-notch: var(--notch);
+  --color-rec: var(--rec);
+  --color-focus: var(--focus);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.56 0.22 258);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-
-  /* TopNotch brand tokens */
-  --tn-blue: #4297F7;
-  --tn-blue-light: #dbe7ff;
-  --tn-blue-mid: #a9c8ff;
-  --tn-blue-dark: #5667ff;
-  --tn-rose: #f43f5e;
-  --tn-notch-black: #0a0a0a;
-  --tn-overlay-muted: rgba(255,255,255,0.35);
-  --tn-overlay-normal: rgba(255,255,255,0.6);
-  --tn-overlay-strong: rgba(255,255,255,0.94);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --paper: oklch(0.982 0.003 95);
+  --ink: oklch(0.18 0.004 95);
+  --ink-2: oklch(0.45 0.006 95);
+  /* Unread text in the ink-in effects: the dimmed lines of a teleprompter. */
+  --ink-3: oklch(0.18 0.004 95 / 0.2);
+  --rule: oklch(0.18 0.004 95 / 0.12);
+  --notch: #0a0a0a;
+  --rec: #f43f5e;
+  /* Focus and selection only. */
+  --focus: oklch(0.5 0.17 255);
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
-    @apply font-sans;
+    @apply bg-paper text-ink font-sans antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: oklch(0.5 0.17 255 / 0.18);
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
   }
 }
+
+/* Faint dot field behind the hero, fading out from the notch. */
+.tn-dots {
+  background-image: radial-gradient(var(--rule) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 60% 70% at 50% 0%, black 20%, transparent 75%);
+}
+
 /* Classic-mode teleprompter scroll — constant speed, exactly as the app does it.
    The line list is rendered twice and shifted by one full copy, so it loops seamlessly. */
 @keyframes tn-classic-scroll {
   to {
     transform: translateY(calc(-1 * var(--tn-scroll-span)));
+  }
+}
+.tn-scroll {
+  animation: tn-classic-scroll var(--tn-scroll-duration) linear infinite;
+}
+
+/* Words rise out of a blur, one after another — the hero reads itself in once the
+   notch has opened. --i is the word index. */
+@keyframes tn-word-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+    filter: blur(8px);
+  }
+}
+.tn-word,
+.tn-rise {
+  animation: tn-word-in 900ms var(--ease-out-expo) both;
+  animation-delay: calc(450ms + var(--i, 0) * 55ms);
+}
+.tn-word {
+  display: inline-block;
+}
+
+/* Scroll reveal for whole blocks. Hidden only when scripting runs, so a failed
+   script never hides the page. Reveal.tsx sets data-shown. */
+@media (scripting: enabled) {
+  [data-reveal]:not([data-shown]) {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+[data-reveal] {
+  transition:
+    opacity 700ms var(--ease-out-expo),
+    transform 900ms var(--ease-out-expo);
+  transition-delay: var(--delay, 0ms);
+}
+
+/* Screen-share proof sheet: the panel arrives solid in the "recording" frame, then
+   dissolves out of it, leaving only its trim lines and the note. Without scripting or
+   with reduced motion it's simply absent, which is the truth being shown. */
+.tn-proof-fill,
+.tn-proof-note {
+  transition:
+    opacity 1100ms var(--ease-out-expo) 1100ms,
+    filter 1100ms var(--ease-out-expo) 1100ms;
+}
+.tn-proof-fill {
+  opacity: 0;
+}
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .tn-proof:not([data-shown]) .tn-proof-fill {
+    opacity: 1;
+  }
+  .tn-proof[data-shown] .tn-proof-fill {
+    filter: blur(10px);
+  }
+  .tn-proof:not([data-shown]) .tn-proof-note {
+    opacity: 0;
+  }
+}
+
+/* Recording waveform in the feature grid. */
+@keyframes tn-wave {
+  0%, 100% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+}
+.tn-wave > span {
+  transform-origin: center;
+  animation: tn-wave 1.1s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -97ms);
+}
+[data-inview="false"] .tn-wave > span {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tn-scroll,
+  .tn-word,
+  .tn-rise,
+  .tn-wave > span {
+    animation: none;
+  }
+  [data-reveal] {
+    transform: none !important;
+    transition: opacity 300ms linear;
   }
 }

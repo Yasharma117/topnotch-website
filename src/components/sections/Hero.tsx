@@ -1,108 +1,49 @@
-'use client'
+import { Download } from '@/components/Download'
 
-import dynamic from 'next/dynamic'
-import Link from 'next/link'
-import { cn } from '@/lib/utils'
-import { ArrowRight, ArrowDown, Lock, Laptop } from 'lucide-react'
-import { GithubMark } from '@/components/GithubMark'
+const HEADLINE = ['The', 'teleprompter', 'that', 'lives', 'in', 'your', 'Mac’s', 'notch.']
 
-// Client-only: the shader paints to a canvas, so it cannot render on the server.
-const GrainGradient = dynamic(
-  () => import('@paper-design/shaders-react').then((mod) => mod.GrainGradient),
-  { ssr: false, loading: () => null }
-)
+/** Where the panel is excluded from capture — named in the app's own docs. */
+const HIDDEN_FROM = ['Zoom', 'Google Meet', 'Microsoft Teams', 'Loom', 'OBS']
 
 export function Hero() {
   return (
-    <section
-      className="relative flex min-h-screen flex-col items-center overflow-hidden bg-white"
-      aria-labelledby="hero-title"
-    >
-      <div className="absolute inset-0 z-0">
-        <GrainGradient
-          colorBack="#f6f8ff"
-          colors={['#dbe7ff', '#a9c8ff', '#4297F7', '#5667FF']}
-          shape="corners"
-          intensity={0.35}
-          noise={0.12}
-          speed={1}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-        />
-      </div>
-
-      <div className="relative z-20 w-full max-w-5xl px-6 pt-[16rem] pb-16 text-center">
-        {/* Headline */}
+    <section aria-labelledby="hero-title" className="relative overflow-hidden">
+      <div className="tn-dots pointer-events-none absolute inset-0" aria-hidden="true" />
+      <div className="relative px-6 pt-56 pb-24 text-center sm:pt-64 md:pb-28">
         <h1
           id="hero-title"
-          className="mb-6 text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-[#0a0a0a]"
+          className="mx-auto max-w-4xl font-serif text-[2.75rem] leading-none font-light tracking-[-0.025em] sm:text-7xl md:text-[5.5rem]"
         >
-          The teleprompter that lives in your Mac&rsquo;s notch.
+          {HEADLINE.map((word, i) => (
+            <span key={i}>
+              <span className="tn-word" style={{ '--i': i } as React.CSSProperties}>
+                {word === 'notch.' ? <em className="italic">notch.</em> : word}
+              </span>{' '}
+            </span>
+          ))}
         </h1>
-
-        {/* Sub-headline */}
-        <p className="mb-10 text-lg md:text-xl text-[#333] max-w-2xl mx-auto leading-relaxed">
-          Read your script while looking straight down the lens. Hidden from screen shares,
-          records as you go, and never leaves your Mac.
-          <span className="font-semibold text-[var(--tn-blue)]"> Free, and there is no account.</span>
+        <p
+          className="tn-rise mx-auto mt-7 max-w-xl text-lg leading-relaxed text-ink-2 md:text-xl"
+          style={{ '--i': HEADLINE.length + 2 } as React.CSSProperties}
+        >
+          Read your script while looking straight down the lens. Nobody on the call can see it,
+          and nothing leaves your Mac.
         </p>
-
-        {/* CTA */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href="#get-topnotch"
-            className={cn(
-              'inline-flex items-center justify-center gap-2 px-8 py-4',
-              'rounded-xl font-semibold text-base',
-              'bg-[#0a0a0a] text-white',
-              'hover:bg-[#262626] active:bg-black',
-              'transition-colors duration-200',
-              'shadow-[0_8px_30px_rgba(0,0,0,0.28)]',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tn-blue)] focus-visible:ring-offset-2'
-            )}
-          >
-            Get TopNotch — Free
-            <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
-          </Link>
-
-          <Link
-            href="https://github.com/Yasharma117/TopNotch"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              'inline-flex items-center justify-center gap-2 px-8 py-4',
-              'rounded-xl font-semibold text-base',
-              'border border-black/10 text-[#0a0a0a]',
-              'bg-white shadow-[0_8px_30px_rgba(0,0,0,0.10)]',
-              'hover:bg-white/90 active:bg-white',
-              'transition-colors duration-200',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2'
-            )}
-          >
-            <GithubMark size={18} />
-            View on GitHub
-          </Link>
-        </div>
-
-        {/* Trust badges — only claims that are actually true today */}
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-[var(--muted-foreground)]">
-          <span className="flex items-center gap-1.5">
-            <Lock size={14} strokeWidth={2} className="text-[var(--tn-blue)]" aria-hidden="true" />
-            Runs entirely on your Mac
-          </span>
-          <span className="flex items-center gap-1.5">
-            <GithubMark size={14} />
-            Free and open source (MIT)
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Laptop size={14} strokeWidth={2} aria-hidden="true" />
-            macOS 13+ · Macs with a notch
-          </span>
+        <div className="tn-rise mt-10" style={{ '--i': HEADLINE.length + 5 } as React.CSSProperties}>
+          <Download />
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-20" aria-hidden="true">
-        <ArrowDown size={24} strokeWidth={1.5} className="text-[var(--muted-foreground)] opacity-50" aria-hidden="true" />
+      {/* Saturn-style proof strip — honest: these are the apps that can't see the panel. */}
+      <div className="relative grid border-t border-rule sm:grid-cols-[auto_1fr]">
+        <p className="flex items-center border-b border-rule px-6 py-4 font-mono text-[11px] tracking-[0.12em] text-ink-2 uppercase sm:border-r sm:border-b-0">
+          Invisible to
+        </p>
+        <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 px-6 py-4 font-serif text-lg text-ink-2 sm:justify-around">
+          {HIDDEN_FROM.map((app) => (
+            <li key={app}>{app}</li>
+          ))}
+        </ul>
       </div>
     </section>
   )

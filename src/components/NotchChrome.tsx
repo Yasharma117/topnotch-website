@@ -16,6 +16,7 @@ const COLLAPSE_AFTER = 64
  */
 export function NotchChrome() {
   const [scrolled, setScrolled] = useState(false)
+  const [hovered, setHovered] = useState(false)
 
   useEffect(() => {
     let frame = 0
@@ -38,13 +39,19 @@ export function NotchChrome() {
   return (
     <div className="pointer-events-none fixed inset-x-0 top-0 z-50 flex max-w-full flex-col items-center overflow-hidden">
       <MenuBar hidden={scrolled} />
-      <div className="-mt-7 flex justify-center">
+      {/* Hovering the tab re-opens the panel, the way the app does. Only the notch takes the
+          pointer; the rest of the strip stays click-through. */}
+      <div
+        className="pointer-events-auto -mt-7 flex justify-center"
+        // Mouse only: a tap fires enter but never leave, which would pin the panel open on a phone.
+        onPointerEnter={(e) => e.pointerType === 'mouse' && setHovered(true)}
+        onPointerLeave={() => setHovered(false)}
+      >
         <NotchOverlay
           reveal
-          collapsed={scrolled}
+          collapsed={scrolled && !hovered}
           speed={11}
           lines={wrapScript(HERO_SCRIPT, 30)}
-          status="Voice-following · en-IN"
         />
       </div>
     </div>

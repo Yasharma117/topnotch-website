@@ -1,0 +1,89 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font-size",
+        "value": "15px",
+        "createdAt": "2026-10-14T19:50:37.978Z",
+        "reason": "Claude: deliberate 15px control/meta step (CTA label, sound pairs, language list); DESIGN.md documenter omitted it as a one-off"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "2.6rem",
+        "createdAt": "2026-10-14T19:50:38.006Z",
+        "reason": "Claude: mobile step of the hero H1 ramp, documented in DESIGN.md display ramp"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "4px",
+        "createdAt": "2026-10-14T19:50:38.035Z",
+        "reason": "Claude: focus-visible outline corner, not a component radius"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "13px",
+        "createdAt": "2026-10-14T19:50:46.105Z",
+        "reason": "Claude: MenuBar mimics the real macOS menu bar, which sets 13px; illustration, not page type"
+      },
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-10-14T20:06:32.883Z",
+        "reason": "Claude: single masked dot field fading from the notch in the hero only; Saturn-referenced texture the user asked for"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "2.75rem",
+        "createdAt": "2026-10-14T20:09:43.627Z",
+        "reason": "Claude: phone step of the hero display ramp, documented in DESIGN.md"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "1.75rem",
+        "createdAt": "2026-10-14T20:09:43.653Z",
+        "reason": "Claude: phone step of the statement ramp, documented in DESIGN.md"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "*",
+        "files": [
+          "src/components/sections/ScreenShare.tsx"
+        ],
+        "createdAt": "2026-10-14T20:18:52.848Z",
+        "reason": "Claude: values belong to the macOS screen illustration (wallpaper, Keynote chrome, menu bar), which DESIGN.md excludes from the system"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          "src/components/sections/ScreenShare.tsx"
+        ],
+        "createdAt": "2026-10-14T20:18:52.880Z",
+        "reason": "Claude: values belong to the macOS screen illustration (wallpaper, Keynote chrome, menu bar), which DESIGN.md excludes from the system"
+      },
+      {
+        "rule": "bounce-easing",
+        "value": "*",
+        "files": [
+          "src/components/LiquidMetalLink.tsx"
+        ],
+        "createdAt": "2026-10-14T20:29:23.231Z",
+        "reason": "Claude: overshoot settle ported verbatim from the user's portfolio CTA, which the user asked to match"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "*",
+        "files": [
+          "src/components/LiquidMetalLink.tsx"
+        ],
+        "createdAt": "2026-10-14T20:29:23.259Z",
+        "reason": "Claude: layered shadow alphas and pill gradient ported verbatim from the user's portfolio CTA"
+      }
+    ]
+  }
+}

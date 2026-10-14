@@ -3,7 +3,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { notchPath, METRICS } from '@/lib/notch'
 import { DEFAULT_SCRIPT, CLASSIC, SPRING, springValue, wrapScript } from '@/lib/script'
-import { cn } from '@/lib/utils'
 
 /** AppColors.overlay* — white on the notch's black chrome. */
 const OVERLAY = { caption: 0.35, secondary: 0.55, muted: 0.72, primary: 0.94 }
@@ -21,6 +20,8 @@ interface NotchOverlayProps {
   reveal?: boolean
   /** Collapse to the bare notch, as the app's panel does when it is not in use. */
   collapsed?: boolean
+  /** Scale to the container's width instead of rendering at true pixel size. */
+  fluid?: boolean
   className?: string
 }
 
@@ -34,36 +35,29 @@ function useSpringSize(targetW: number, targetH: number, animate: boolean) {
   const [size, setSize] = useState(() =>
     animate ? { w: METRICS.notchWidth, h: METRICS.notchHeight } : { w: targetW, h: targetH }
   )
-  const frame = useRef(0)
   const current = useRef(size)
-  current.current = size
 
   useEffect(() => {
-    if (!animate) {
-      setSize({ w: targetW, h: targetH })
-      return
-    }
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setSize({ w: targetW, h: targetH })
-      return
-    }
+    if (!animate) return
+    // Reduced motion lands on the target in one frame instead of springing.
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     // Spring from wherever the panel is right now, so a direction change
     // mid-flight continues smoothly instead of snapping back to the start.
     const from = current.current
     const start = performance.now()
+    let frame = 0
     const tick = (now: number) => {
-      const t = (now - start) / 1000
-      setSize({
-        w: springValue(t, from.w, targetW),
-        h: springValue(t, from.h, targetH),
-      })
-      if (t < SPRING.settleDuration) frame.current = requestAnimationFrame(tick)
+      const t = reduce ? SPRING.settleDuration : (now - start) / 1000
+      const next = { w: springValue(t, from.w, targetW), h: springValue(t, from.h, targetH) }
+      current.current = next
+      setSize(next)
+      if (t < SPRING.settleDuration) frame = requestAnimationFrame(tick)
     }
-    frame.current = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(frame.current)
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
   }, [targetW, targetH, animate])
 
-  return size
+  return animate ? size : { w: targetW, h: targetH }
 }
 
 export function NotchOverlay({
@@ -75,6 +69,7 @@ export function NotchOverlay({
   speed = CLASSIC.speed,
   reveal = false,
   collapsed = false,
+  fluid = false,
   className,
 }: NotchOverlayProps) {
   const { w, h } = useSpringSize(
@@ -89,7 +84,6 @@ export function NotchOverlay({
   const clipId = `${uid}-clip`
   const maskId = `${uid}-mask`
   const fadeId = `${uid}-fade`
-  const tabLeft = (w - METRICS.notchWidth) / 2
   const bodyTop = METRICS.shoulderDrop + METRICS.notchHeight
   // Collapsed, the panel is shorter than the tab it starts below, so there is no
   // body to draw the script into — and a negative-height mask rect is invalid SVG.
@@ -106,8 +100,8 @@ export function NotchOverlay({
       viewBox={`0 0 ${w} ${h}`}
       // Rendered at true size so collapsing actually shrinks it, rather than
       // scaling a smaller viewBox up to fill a fixed-width box.
-      style={{ width: w, height: h, maxWidth: '100%' }}
-      className={cn('block', className)}
+      style={fluid ? { width: '100%', height: 'auto' } : { width: w, height: h, maxWidth: '100%' }}
+      className={`block ${className ?? ''}`}
       role="img"
       aria-label={`TopNotch teleprompter: ${script.join(' ')}`}
     >
@@ -129,16 +123,16 @@ export function NotchOverlay({
         </mask>
       </defs>
 
-      <path d={notchPath({ width: w, height: h })} fill="var(--tn-notch-black)" />
+      <path d={notchPath({ width: w, height: h })} fill="var(--notch)" />
 
       {/* Record dot + mode, centred in the 44pt tab. Centring matters once the
           panel collapses: left-anchored text runs straight off the narrower tab. */}
       {(() => {
         const full = status ?? `Classic · ${speed} pt/s`
-        // Collapsed there is only room for the tail of the status, so use it.
-        const label = hasBody ? full : full.split('·').pop()!.trim()
+        // Collapsed, the bare tab keeps only the record dot — a clipped status reads as noise.
+        const label = hasBody ? full : ''
         const dot = 8
-        const gap = 8
+        const gap = label ? 8 : 0
         const textW = label.length * 12 * 0.6
         const startX = (w - (dot + gap + textW)) / 2
         return (
@@ -147,8 +141,8 @@ export function NotchOverlay({
               cx={startX + dot / 2}
               cy={METRICS.notchHeight / 2}
               r={4}
-              fill={recording ? 'var(--tn-rose)' : 'rgba(255,255,255,0.26)'}
-              className={recording ? 'animate-pulse' : undefined}
+              fill={recording ? 'var(--rec)' : 'rgba(255,255,255,0.26)'}
+              className={recording ? 'motion-safe:animate-pulse' : undefined}
             />
             <text
               x={startX + dot + gap}
@@ -167,9 +161,10 @@ export function NotchOverlay({
       {hasBody && (
       <g clipPath={`url(#${clipId})`} mask={`url(#${maskId})`}>
         <g
+          className="tn-scroll"
           style={{
             '--tn-scroll-span': `${span}px`,
-            animation: `tn-classic-scroll ${duration}s linear infinite`,
+            '--tn-scroll-duration': `${duration}s`,
           } as React.CSSProperties}
         >
           {/* Rendered twice so the shift by one full copy is seamless */}

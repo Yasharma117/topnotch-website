@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { Wifi, BatteryMedium, SlidersHorizontal, Search } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 const MENUS = ['File', 'Edit', 'View', 'Window', 'Help']
 
@@ -31,12 +30,9 @@ export function MenuBar({ hidden = false }: { hidden?: boolean }) {
   return (
     <div
       aria-hidden="true"
-      className={cn(
-        'flex h-7 w-full select-none items-center justify-between overflow-hidden',
-        'bg-[var(--tn-notch-black)] px-4 text-[13px] text-white/90',
-        'transition-opacity duration-300 ease-out',
+      className={`flex h-7 w-full select-none items-center justify-between overflow-hidden bg-notch px-4 text-[13px] text-white/90 transition-opacity duration-300 ease-out ${
         hidden ? 'opacity-0' : 'opacity-100'
-      )}
+      }`}
     >
       <div className="flex items-center gap-4">
         {/* Apple's mark — a brand logo, so inline rather than from an icon set */}
@@ -55,7 +51,7 @@ export function MenuBar({ hidden = false }: { hidden?: boolean }) {
       <div className="flex items-center gap-3 text-white/85">
         <BatteryMedium size={17} strokeWidth={1.5} />
         <Wifi size={15} strokeWidth={2} />
-        <SlidersHorizontal size={14} strokeWidth={2} className="hidden xs:inline sm:inline" />
+        <SlidersHorizontal size={14} strokeWidth={2} className="hidden sm:inline" />
         <Search size={14} strokeWidth={2} className="hidden sm:inline" />
         {/* Reserve the width so enabling the clock does not shift the row */}
         <span className="hidden min-w-[9.5rem] text-right tabular-nums sm:inline">{clock ?? ' '}</span>
